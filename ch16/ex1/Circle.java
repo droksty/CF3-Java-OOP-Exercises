@@ -1,6 +1,6 @@
 package gr.aueb.cf.testbed.ch16.ex1;
 
-public class Circle extends AbstractShape implements TwoDimensional {
+public class Circle extends AbstractShape implements ITwoDimensional {
     private double radius;
 
 
