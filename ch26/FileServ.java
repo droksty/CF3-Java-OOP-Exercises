@@ -8,22 +8,21 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class FileServ extends Thread {
-    ServerSocket serverSocket;
-    final int SERVER_PORT = 139;
-    final String SERVER_ADDRESS = "127.0.0.1";
+    final static int SERVER_PORT = 139;
+    final static String SERVER_ADDRESS = "127.0.0.1";
+    static ServerSocket serverSocket;
+    Socket socket;
     String filePath = "C:\\tmp\\";
+
+    FileServ(Socket socket) {
+        this.socket = socket;
+    }
+
 
     @Override
     public void run() {
         try {
-            serverSocket = new ServerSocket();
-            serverSocket.bind(new InetSocketAddress(SERVER_ADDRESS, SERVER_PORT), 5);
-            System.out.println("File Server is listening..");
-
             while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("Client connected..");
-
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 
@@ -48,7 +47,18 @@ public class FileServ extends Thread {
     }
 
     public static void main(String[] args) {
-        FileServ fs = new FileServ();
-        fs.start();
+        try {
+            serverSocket = new ServerSocket();
+            serverSocket.bind(new InetSocketAddress(SERVER_ADDRESS, SERVER_PORT), 5);
+            System.out.println("File Server is listening..");
+
+            while (true) {
+                Socket socket = serverSocket.accept();
+                new Thread(new FileServ(socket)).start();
+                System.out.println("Client connected..");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
